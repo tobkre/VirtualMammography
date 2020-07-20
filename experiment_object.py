@@ -46,12 +46,14 @@ class Detector:
         width (int) : width of detector in mm
         height (int): height of detecor in mm
     """
-    def __init__(self, npxx:int, npxy:int, pos, width, height, home_path):
+    def __init__(self, npxx:int, npxy:int, pos, width, height, bits, calibration, home_path):
         self.geometry = Object(pos, width, height)
         self.__px_x_size = width/npxx
         self.__px_y_size = width/npxy
         self.npxx = npxx
         self.npxy = npxy
+        self.bit_depth = bits
+        self.max_signal = calibration
         self.x_pos = np.linspace(self.geometry.x - self.geometry.width/2, 
                                  self.geometry.x + self.geometry.width/2, 
                                  self.npxx) + self.__px_x_size/2
@@ -88,13 +90,13 @@ class Detector:
             noise = gaussian_filter(noise, sigma=sig_bl)
         return (noise + image)
     
-    def get_dg_output(self, image, bit_depth, max_signal):
+    def get_dg_output(self, image):
         #white_noise = np.random.normal(loc=0, scale=1, size=image.shape)
         #add noise
         
         #digitized with bit depth n
         #2^n
-        return image * 2**bit_depth / max_signal
+        return image * 2**self.bit_depth / self.max_signal
 
 class Source:
     """

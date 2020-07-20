@@ -19,38 +19,31 @@ from create_dicom import create_dicom_from_h5
 from os.path import join as pjoin
 import yaml
 import argparse
-
-#from joblib import Parallel, delayed
-
 from time import localtime
 import numpy as np
 from os.path import normpath
 import h5py
 import sys
-#import matplotlib.pyplot as plt
-import pdb
 
 def process_i(detector, phantom, prim_img, physic, SNR, i):
     image = prim_img
-    """add scattering"""
     rows, cols = image.shape
+    
+    """add scattering"""
     crow, ccol = int(rows/2), int(cols/2)
     f_size = 2
     lsf = np.zeros(image.shape)
     lsf[crow-f_size:crow+f_size, ccol-f_size:ccol+f_size] = 1
     SPR = phantom.SPR 
     
-    scatter = physic.compute_scattering(image, lsf)
-    scatter = scatter * (SPR*np.mean(image)/np.mean(scatter))
-    image = image + scatter
+    img_scat = physic.add_scattering(image, lsf, SPR)
     
     """blur image"""
-    bl_img = detector.consider_blur(image, method='gaussian')
+    bl_img = detector.consider_blur(img_scat, method='gaussian')
 
     """digitize detector output (linear)"""
-    dg = detector.get_dg_output(bl_img, 14, 2032443611.0515957)
-    """adjust mean background level to be the same as for the real images"""
-    #pdb.set_trace()
+    dg = detector.get_dg_output(bl_img)
+    
     """add white noise to image"""
     dg = detector.compute_noise(dg, SNR, method='white_noise')
     return dg.flatten()
@@ -105,6 +98,9 @@ def main(cfg_file):
     pxpitch = cfg["detector"]["pitch"] 
     SPR = cfg["detector"]["SPR"]
     SNR = cfg["detector"]["SNR"]
+    bits = cfg["detector"]["bits"]
+    calibration = cfg["detector"]["calibration"]
+     
     
 #    num_workers = cfg["general"]["nworkers"]
     n_img = cfg["general"]["nimg"]
@@ -129,7 +125,7 @@ def main(cfg_file):
         xshift = np.random.choice((-1,1))*np.random.rand()*pxpitch
         yshift = np.random.choice((-1,1))*np.random.rand()*pxpitch
         shift = np.vstack((xshift*np.ones((1,n_img)),yshift*np.ones((1,n_img))))
-        detector = Detector(npx, npy, np.array([xshift,yshift,0]), dimx, dimy, home_path)
+        detector = Detector(npx, npy, np.array([xshift,yshift,0]), dimx, dimy, bits, calibration, home_path)
         cdmamXRAY = physic.compute_image(detector, source, 0 , cdmam ,0)
         dset = do_it(n_img=n_img, detector=detector, phantom=cdmam, prim_img=cdmamXRAY, physic=physic, SNR=SNR, path=home_path)
         # dset = np.zeros((npx*npy,n_img))

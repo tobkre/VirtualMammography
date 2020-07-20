@@ -203,13 +203,14 @@ class Physics:
                 n_ray += 1
         return image  
     
-    def compute_scattering(self, primary_image, scatter_kernel):
+    def add_scattering(self, primary_image, scatter_kernel, SPR):
         fft_sig = np.fft.fft2(primary_image)
         fshift = np.fft.fftshift(fft_sig)
         
         f_ishift = np.fft.ifftshift(fshift*scatter_kernel)
         scatter = np.abs(np.fft.ifft2(f_ishift))
-        return scatter
+        scatter = scatter * (SPR*np.mean(primary_image)/np.mean(scatter))
+        return primary_image + scatter
 
 def process_i(detector, source, phantom, prim_img, SNR, i):
     image = prim_img

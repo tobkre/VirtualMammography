@@ -12,9 +12,8 @@ detector:
     SPR: 0.18
     SNR: 9.7
     filters: {'Be': 0.3, 'PMMA': 2.35, 'Mo':0.0275}
-    filters: {'Be': 0.5, 'AIR': 600, 'Mo': 0.03}
-    filters: {'Be': 0.3, 'Mo': 0.03}
-    filters: {'Al':1.6, 'Be': 0.3, 'PMMA': 2.35, 'Rh':0.025}
+    bits: 14
+    calibration: 2032443611.0515957
 
 phantom:
     singleCell: True #take care of detector npx, npy=146 for single cell
