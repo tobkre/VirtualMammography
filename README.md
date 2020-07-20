@@ -15,6 +15,12 @@ Furthermore the following packages are required:
 
 ## Usage
 
+You can start the software using the command line by choosing the desired configuration file that is located in .\config\ using the following command:
+
+```python3 cdmam_simulator.py --config config-file.yml```
+
+This simulates images according to the chosen configuration and saves DICOM images in the .\Results\DICOM\ folder.
+
 ## Citation
 
 ```@article{kretz2019determination,
