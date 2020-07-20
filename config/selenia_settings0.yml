@@ -1,0 +1,28 @@
+source:
+    material: "molybdenum"
+    kVp: 25
+    mAs: 110
+    eBin: 0.5
+    filters: {'Be': 0.3, 'PMMA': 2.35, 'Mo':0.0275}
+     
+detector:
+    npx: 146
+    npy: 146
+    pitch: 0.06
+    SPR: 0.18
+    SNR: 9.7
+    filters: {'Be': 0.3, 'PMMA': 2.35, 'Mo':0.0275}
+    filters: {'Be': 0.5, 'AIR': 600, 'Mo': 0.03}
+    filters: {'Be': 0.3, 'Mo': 0.03}
+    filters: {'Al':1.6, 'Be': 0.3, 'PMMA': 2.35, 'Rh':0.025}
+
+phantom:
+    singleCell: True #take care of detector npx, npy=146 for single cell
+    diam: 1.6 #diameter in mm
+    thick: 2.0 #thickness in mu m 
+    file: 'MATLAB/VirtualCDMAM/VirtualCDMAM.h5'
+    
+general:
+    nimg: 20
+    npos: 1
+    nworkers: 10

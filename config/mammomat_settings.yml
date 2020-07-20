@@ -1,0 +1,22 @@
+source:
+    material: "tungsten"
+    kVp: 31
+    mAs: 139
+    eBin: 0.5
+    filters: {'Al': 1.6, 'Be': 0.3, 'Rh':0.05}
+    
+detector:
+    npx: 2323
+    npy: 3654
+    pitch: 0.06
+    SPR: 0.18
+    SNR: 2.5
+    filters: {'Be': 0.3, 'PMMA': 2.35, 'Mo':0.0275}
+    filters: {'Be': 0.5, 'AIR': 600, 'Mo': 0.03}
+    filters: {'Be': 0.3, 'Mo': 0.03}
+    filters: {'Al':1.6, 'Be': 0.3, 'PMMA': 2.35, 'Rh':0.025}
+    
+general:
+    nimg: 20
+    npos: 10
+    nworkers: 10
