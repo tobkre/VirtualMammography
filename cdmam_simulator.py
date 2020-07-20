@@ -79,13 +79,11 @@ def main(cfg_file):
         cfg = yaml.load(fp, Loader=yaml.SafeLoader)
     
     
-    fn = home_path+'SpyderProjects/SaveSimRes/'
     lt = localtime()
     y,m,d = lt[0:3]
     date = '%02i%02i%02i' % (d,m,y)
     rid = "{:d}".format(np.random.randint(1000))
     savename = normpath(pjoin('.','Results','sim_data_'+date+'_'+rid+'.hdf5'))
-#    savename = normpath(fn+'sim_data_randompos_'+date+'_'+rid+'.hdf5')
     print(savename)
     
     material = cfg["source"]["material"]

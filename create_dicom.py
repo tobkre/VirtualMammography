@@ -49,7 +49,7 @@ def create_dicom_from_h5(f):
     except:
         eBin = 0
     
-    ds = pydicom.dcmread(normpath(join('','EE1ADC58')))
+    ds = pydicom.dcmread(normpath(join('.','EE1ADC58')))
     
     for i in range(0,nimg):
         cut_img = np.reshape(data[:,i], (npy, npx))

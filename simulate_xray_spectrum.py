@@ -8,6 +8,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 import matplotlib.pyplot as plt
 from os.path import normpath
+from os.path import join as pjoin
 import time
 
 class SimulateXRaySpectrum():
@@ -24,13 +25,13 @@ class SimulateXRaySpectrum():
         
         if anode_material == 'molybdenum':
             self.material = 'molybdenum'
-            filename = normpath(path+'SpyderProjects/Simulation/molybdenum_coefficients.npy')
+            filename = normpath(pjoin('.','attenuation_files','molybdenum_coefficients.npy'))
         elif anode_material == 'rhodium':
             self.material = 'rhodium'
-            filename = normpath(path+'SpyderProjects/Simulation/rhodium_coefficients.npy')
+            filename = normpath(pjoin('.','attenuation_files','rhodium_coefficients.npy'))
         elif anode_material == 'tungsten':
             self.material = 'tungsten'
-            filename = normpath(path+'SpyderProjects/Simulation/tungsten_coefficients.npy')
+            filename = normpath(pjoin('.','attenuation_files','tungsten_coefficients.npy'))
         else:
             raise ValueError('Unknown anode material:',anode_material)
         
@@ -94,22 +95,22 @@ class SimulateXRaySpectrum():
     def __parse_filter(self, material):
         if material == 'AIR':
             density = 0.0012 #g/cm^3
-            f_filename = normpath(self.path+'DataFiles/AttenuationFiles/air_attenuation.txt')        
+            f_filename = normpath(pjoin('.','attenuation_files','air_attenuation.txt'))        
         elif material == 'Al':
             density = 2.6989 #g/cm^3
-            f_filename = normpath(self.path+'DataFiles/AttenuationFiles/al_attenuation.txt')        
+            f_filename = normpath(pjoin('.','attenuation_files','al_attenuation.txt'))        
         elif material == 'Be':
             density = 1.848 #g/cm^3
-            f_filename = normpath(self.path+'DataFiles/AttenuationFiles/be_attenuation.txt') 
+            f_filename = normpath(pjoin('.','attenuation_files','be_attenuation.txt')) 
         elif material == 'Mo':
             density = 10.28 #g/cm^3
-            f_filename = normpath(self.path+'DataFiles/AttenuationFiles/mo_attenuation.txt')
+            f_filename = normpath(pjoin('.','attenuation_files','mo_attenuation.txt'))
         elif material == 'Rh':
             density = 12.38 #g/cm^3
-            f_filename = normpath(self.path+'DataFiles/AttenuationFiles/rh_attenuation.txt')
+            f_filename = normpath(pjoin('.','attenuation_files','rh_attenuation.txt'))
         elif material == 'PMMA':
             density = 1.19 #g/cm^3
-            f_filename = normpath(self.path+'DataFiles/AttenuationFiles/pmma_attenuation.txt')
+            f_filename = normpath(pjoin('.','attenuation_files','pmma_attenuation.txt'))
         else:
             raise ValueError('Unknown filter material:',material)
             
