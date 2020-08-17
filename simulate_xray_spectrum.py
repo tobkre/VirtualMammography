@@ -20,18 +20,18 @@ class SimulateXRaySpectrum():
         anode_material  -- string representing anode material.
                            Choose molybdenum, rhodium or tungsten.
     """    
-    def __init__(self, anode_material, voltage, path=''):  
+    def __init__(self, anode_material, voltage, path='.'):  
         self.path = path
         
         if anode_material == 'molybdenum':
             self.material = 'molybdenum'
-            filename = normpath(pjoin('.','attenuation_files','molybdenum_coefficients.npy'))
+            filename = normpath(pjoin(self.path,'attenuation_files','molybdenum_coefficients.npy'))
         elif anode_material == 'rhodium':
             self.material = 'rhodium'
-            filename = normpath(pjoin('.','attenuation_files','rhodium_coefficients.npy'))
+            filename = normpath(pjoin(self.path,'attenuation_files','rhodium_coefficients.npy'))
         elif anode_material == 'tungsten':
             self.material = 'tungsten'
-            filename = normpath(pjoin('.','attenuation_files','tungsten_coefficients.npy'))
+            filename = normpath(pjoin(self.path,'attenuation_files','tungsten_coefficients.npy'))
         else:
             raise ValueError('Unknown anode material:',anode_material)
         
@@ -84,7 +84,7 @@ class SimulateXRaySpectrum():
     def compute_fluence_per_exposure(self, E):
         """
         """
-        air_dat = np.loadtxt(normpath(self.path+'DataFiles/AttenuationFiles/air_attenuation.txt'), skiprows=5)
+        air_dat = np.loadtxt(normpath(pjoin(self.path,'attenuation_files','air_attenuation.txt')), skiprows=5)
         mu_air = interp1d(air_dat[:,0]*1000, air_dat[:,2], kind='linear', bounds_error=False, fill_value=np.inf)
         return 5.43e5/(mu_air(E)*E)
     
@@ -95,22 +95,22 @@ class SimulateXRaySpectrum():
     def __parse_filter(self, material):
         if material == 'AIR':
             density = 0.0012 #g/cm^3
-            f_filename = normpath(pjoin('.','attenuation_files','air_attenuation.txt'))        
+            f_filename = normpath(pjoin(self.path,'attenuation_files','air_attenuation.txt'))        
         elif material == 'Al':
             density = 2.6989 #g/cm^3
-            f_filename = normpath(pjoin('.','attenuation_files','al_attenuation.txt'))        
+            f_filename = normpath(pjoin(self.path,'attenuation_files','al_attenuation.txt'))        
         elif material == 'Be':
             density = 1.848 #g/cm^3
-            f_filename = normpath(pjoin('.','attenuation_files','be_attenuation.txt')) 
+            f_filename = normpath(pjoin(self.path,'attenuation_files','be_attenuation.txt')) 
         elif material == 'Mo':
             density = 10.28 #g/cm^3
-            f_filename = normpath(pjoin('.','attenuation_files','mo_attenuation.txt'))
+            f_filename = normpath(pjoin(self.path,'attenuation_files','mo_attenuation.txt'))
         elif material == 'Rh':
             density = 12.38 #g/cm^3
-            f_filename = normpath(pjoin('.','attenuation_files','rh_attenuation.txt'))
+            f_filename = normpath(pjoin(self.path,'attenuation_files','rh_attenuation.txt'))
         elif material == 'PMMA':
             density = 1.19 #g/cm^3
-            f_filename = normpath(pjoin('.','attenuation_files','pmma_attenuation.txt'))
+            f_filename = normpath(pjoin(self.path,'attenuation_files','pmma_attenuation.txt'))
         else:
             raise ValueError('Unknown filter material:',material)
             
@@ -189,40 +189,17 @@ if __name__=='__main__':
     import seaborn as sns
     sns.set_style("white")
     sns.set_context("talk") 
-    home_path = 'N:/MatMoDatPrivate/kretz01/linux/'
     material = 'tungsten'
     voltage = 31.
-    simulator = SimulateXRaySpectrum(anode_material=material, 
-                                                voltage=voltage, filter_material='rhodium', filter_thickness=0.015, path=home_path)
+    simulator = SimulateXRaySpectrum(anode_material=material, voltage=voltage)
     spectrum = simulator.compute_spectrum()
     plt.figure()
     plt.plot(spectrum[:,0],spectrum[:,1], label='Tungsten 31 kV spectrum')
-    f_spectrum = simulator.filter_spectrum(spectrum=spectrum)
+    f_spectrum = simulator.filter_spectrum(spectrum=spectrum, material='Rh', thickness=0.015)
     plt.plot(f_spectrum[:,0],f_spectrum[:,1], label='Filtered spectrum (Rhodium)')
     plt.xlabel('Energy [keV]')
     plt.ylabel('Photon Flux')
     plt.legend(loc='best')
     plt.show()
-    #sampled_30, energ, photons = simulator.sample_spectrum_fast()
-#    spectrum_20 = simulator.compute_spectrum()
-#    simulator.set_voltage(30.)
-#    spectrum_30 = simulator.compute_spectrum()
-#    
-#    
-#    
-#    simulator.set_voltage(40.) 
-#    spectrum_40 = simulator.compute_spectrum()
-#    
-#    plt.figure()
-#    plt.title(material)
-#    plt.plot(spectrum_20[:,0], spectrum_20[:,1])
-#    plt.plot(spectrum_30[:,0], spectrum_30[:,1])
-#    plt.plot(spectrum_40[:,0], spectrum_40[:,1])
-#    plt.axis([0, 45, 0, 6E+7])
-#    
-#    plt.figure()
-#    plt.title(material+' sampled')
-#    plt.plot(energ, sampled_30)
-#    plt.axis([0, 45, 0, 1E+3])
-#    plt.show()
+
     

@@ -62,18 +62,8 @@ def do_it(n_img, detector, phantom, prim_img, physic, SNR, path):
 
 
 def main(cfg_file):
-    if 'win' in sys.platform:
-        home_path = 'N:\\MatMoDatPrivate\\kretz01\\linux\\'
-    elif 'linux' in sys.platform:
-        home_path = '/home/kretz01/san/'
-    else:
-        raise OSError
-    
-    print('Home: {}'.format(home_path))
-    print()
-    print('Using: {}'.format(cfg_file))
+    home_path='.'
     cfg_fp = normpath(pjoin('.','config',cfg_file))
-    #cfg_fp = pjoin(home_path,'SpyderProjects','Simulation','mammomat_settings.yml')
     
     with open(cfg_fp) as fp:
         cfg = yaml.load(fp, Loader=yaml.SafeLoader)

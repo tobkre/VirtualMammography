@@ -174,21 +174,19 @@ def calc_attenuation_parameters(start, end, p_object):
 
 def test_it():
     '''Added doc'''
-    from experiment_object import Detector, Source, Plate, VoxelObject, CDMAM_phantom
+    from experiment_object import Detector, Source, Plate, VoxelObject, CDMAM_cell
     import matplotlib.pyplot as plt
-    import progressbar 
+    home_path='.'
     
-    detector = Detector(296, 296, np.array([0,0,0]), 18, 18)
-    source = Source('tungsten', 31., np.array([0,0,700]), 0.54, 0.33)
-    
+    detector = Detector(296, 296, np.array([0,0,0]), 18, 18, 14, 2032443611.0515957, '.')
+    cfg_s={'source':{'material': "tungsten", 'kVp': 28, 'mAs': 155, 'eBin': 0.5, 'filters':{'Be': 0.3}}}
+    source = Source(cfg_s['source'], np.array([0,0,700]), 0.54, 0.33, home_path)
     diam = np.array([1.6])
     #thick = np.array([.13e-3, .16e-3, .20e-3, .25e-3, .36e-3])
     thick = np.array([.13e-3])
     for au_diam in diam:
         for au_thick in thick:
-            phantom = CDMAM_phantom(au_diameter=au_diam, au_thickness=au_thick, pos=np.array([0,0,10]))
-            pmma_path = 'N:/MatMoDatPrivate/kretz01/linux/SpyderProjects/Simulation/attenuation_files/pmma_attenuation.txt'
-            compression_plate = Plate(1.19, np.array([0,0,11]), 30, 30, 10, pmma_path)
+            phantom = CDMAM_cell(au_diameter=au_diam, au_thickness=au_thick, pos=np.array([0,0,10]), SPR=0.18, home_path=home_path)
             
             n_rays = detector.npxx * detector.npxy
             image = np.empty((detector.npxx, detector.npxy))
@@ -196,9 +194,9 @@ def test_it():
             z_pos1 =  detector.geometry.z
             
             n_ray = 0
-            pbar = progressbar.ProgressBar(max_value=n_rays)
+#            pbar = progressbar.ProgressBar(max_value=n_rays)
             
-            E_min, E_max = min(source.f_spectrum[:,0]), max(source.f_spectrum[:,0])
+            E_min, E_max = min(source.Spectrum[:,0]), max(source.Spectrum[:,0])
             E_sampled = np.linspace(E_min, E_max, 60)
             
             I0 = source.get_intensity(E_sampled)
@@ -222,7 +220,7 @@ def test_it():
                     zwischen = np.sum(red_intensities*response*(np.roll(E_sampled, -1)-E_sampled)[0])                    
                     image[x_ind, y_ind] =  zwischen
                     n_ray += 1
-                    pbar.update(n_ray)
+#                    pbar.update(n_ray)
             
             """add scattering"""
             rows, cols = image.shape
@@ -243,14 +241,14 @@ def test_it():
             bl_img = detector.consider_blur(image, method='gaussian')#TODO: check if gaussian point spread function is a good assumption
             
             """add white noise to image"""
-            no_img_bl = detector.compute_noise(bl_img, method='white_noise')
+            no_img_bl = detector.compute_noise(bl_img, SNR=9.7, method='white_noise')
            
             """digitize detector output linear"""
             #dg = detector.get_dg_output(no_img_bl, 14, 10**19)
-            dg = detector.get_dg_output(no_img_bl, 14, 2*5653061220.4489796 * 38.318/484.2743 * 547.858/484.2743)
+            dg = detector.get_dg_output(no_img_bl)
             
             plt.figure()
-            plt.imshow(dg, cmap='gray', vmin=284, vmax=784)
+            plt.imshow(dg, cmap='gray')
             plt.title(str(au_thick)+', '+str(au_diam))
             plt.figure()
             plt.plot(dg[:,150])

@@ -9,6 +9,7 @@ from scipy.interpolate import interp1d
 from scipy.ndimage.filters import gaussian_filter
 from simulate_xray_spectrum import SimulateXRaySpectrum
 from os.path import normpath
+from os.path import join as pjoin
 import h5py
 import matplotlib.pyplot as plt
 
@@ -63,7 +64,7 @@ class Detector:
         self.x_grid, self.y_grid = np.meshgrid(self.x_pos, self.y_pos)
         self.z_grid = np.ones_like(self.x_grid) * self.geometry.z
         self.grid = np.array([self.x_grid, self.y_grid, self.z_grid]).T.reshape(self.npxx, self.npxy, 3)
-        self.__CsI_data = np.loadtxt(normpath(home_path+'DataFiles/AttenuationFiles/CsI_attenuation.txt'), skiprows=3)
+        self.__CsI_data = np.loadtxt(normpath(pjoin(home_path,'attenuation_files','CsI_attenuation.txt')), skiprows=3)
         self.__response = interp1d(self.__CsI_data[:,0]*1000, self.__CsI_data[:,1], kind='cubic')
         
         self.__dens = 4.51 # in g/cm^2 ??
@@ -219,7 +220,7 @@ class VoxelObject:
         vx_size (int)      : (unit) size of cubic voxels
         pos (array)        :  3d position array of object center
     """
-    def __init__(self, voxel_array, vx_size, pos):
+    def __init__(self, voxel_array, vx_size, pos, home_path='.'):
         self.voxels = voxel_array
         self.vx_length = vx_size
         self.n_vox_x = voxel_array.shape[0]
@@ -236,9 +237,9 @@ class VoxelObject:
         self.__FATTY_DENS = 0.95 # g/cm^3 
         self.__MASS_DENS = 1.044 # g/cm^3
         
-        self.__FAT_DATA = np.loadtxt('N:/MatMoDatPrivate/kretz01/linux/SpyderProjects/Simulation/attenuation_files/adipose_attenuation.txt', skiprows=5)
-        self.__GLA_DATA = np.loadtxt('N:/MatMoDatPrivate/kretz01/linux/SpyderProjects/Simulation/attenuation_files/glandular_attenuation.txt', skiprows=5)
-        self.__MAS_DATA = np.loadtxt('N:/MatMoDatPrivate/kretz01/linux/SpyderProjects/Simulation/attenuation_files/carcinoma_attenuation.txt', skiprows=5)
+        self.__FAT_DATA = np.loadtxt(normpath(pjoin(home_path, 'attenuation_files','adipose_attenuation.txt')), skiprows=5)
+        self.__GLA_DATA = np.loadtxt(normpath(pjoin(home_path, 'attenuation_files','glandular_attenuation.txt')), skiprows=5)
+        self.__MAS_DATA = np.loadtxt(normpath(pjoin(home_path, 'attenuation_files','carcinoma_attenuation.txt')), skiprows=5)
         self.__MU_FAT = interp1d(self.__FAT_DATA[:,0]*1000, self.__FAT_DATA[:,1], kind='cubic')
         self.__MU_GLA = interp1d(self.__GLA_DATA[:,0]*1000, self.__GLA_DATA[:,1], kind='cubic')
         self.__MU_MAS = interp1d(self.__MAS_DATA[:,0]*1000, self.__MAS_DATA[:,1], kind='cubic')
@@ -328,9 +329,9 @@ class CDMAM_cell:
         self.__AL_DENS = 2.6989# g/cm^3
         self.__BD_DENS = 2.6989 *65# g/cm^3
         
-        self.__PMMA_DATA = np.loadtxt(normpath(home_path+'DataFiles/AttenuationFiles/pmma_attenuation.txt'), skiprows=5)
-        self.__AU_DATA = np.loadtxt(normpath(home_path+'DataFiles/AttenuationFiles/au_attenuation.txt'), skiprows=5)
-        self.__AL_DATA = np.loadtxt(normpath(home_path+'DataFiles/AttenuationFiles/al_attenuation.txt'), skiprows=5)
+        self.__PMMA_DATA = np.loadtxt(normpath(pjoin(home_path,'attenuation_files','pmma_attenuation.txt')), skiprows=5)
+        self.__AU_DATA = np.loadtxt(normpath(pjoin(home_path,'attenuation_files','au_attenuation.txt')), skiprows=5)
+        self.__AL_DATA = np.loadtxt(normpath(pjoin(home_path,'attenuation_files','al_attenuation.txt')), skiprows=5)
         
         self.MU_PMMA = interp1d(self.__PMMA_DATA[:,0]*1000, self.__PMMA_DATA[:,2], kind='cubic')
         self.MU_AU = interp1d(self.__AU_DATA[:,0]*1000, self.__AU_DATA[:,2], kind='cubic')
@@ -459,9 +460,9 @@ class CDMAMFF:
         self.__AL_DENS = 2.6989# g/cm^3
         self.__BD_DENS = 19.445# g/cm^3
         
-        self.__PMMA_DATA = np.loadtxt(normpath(home_path+'DataFiles/AttenuationFiles/pmma_attenuation.txt'), skiprows=5)
-        self.__AU_DATA = np.loadtxt(normpath(home_path+'DataFiles/AttenuationFiles/au_attenuation.txt'), skiprows=5)
-        self.__AL_DATA = np.loadtxt(normpath(home_path+'DataFiles/AttenuationFiles/al_attenuation.txt'), skiprows=5)
+        self.__PMMA_DATA = np.loadtxt(normpath(pjoin(home_path,'attenuation_files/','pmma_attenuation.txt')), skiprows=5)
+        self.__AU_DATA = np.loadtxt(normpath(pjoin(home_path,'attenuation_files/','au_attenuation.txt')), skiprows=5)
+        self.__AL_DATA = np.loadtxt(normpath(pjoin(home_path,'attenuation_files','al_attenuation.txt')), skiprows=5)
         
         self.MU_PMMA = interp1d(self.__PMMA_DATA[:,0]*1000, self.__PMMA_DATA[:,2], kind='cubic')
         self.MU_AU = interp1d(self.__AU_DATA[:,0]*1000, self.__AU_DATA[:,2], kind='cubic')
@@ -514,7 +515,7 @@ if __name__=='__main__':
 
 #    cdmam.show_phantom('x')
 #    cdmam.show_phantom('y')
-    home_path = 'N:\\MatMoDatPrivate\\kretz01\\linux\\'
+    home_path = '.'
     
 #    cfg_w={'source':{'material': "tungsten", 'kVp': 28, 'mAs': 155, 'eBin': 0.5, 'filters':{'Be': 0.3, 'Rh':0.05}}}
 #    cfg_mo={'source':{'material': "molybdenum", 'kVp': 28, 'mAs': 155, 'eBin': 0.5, 'filters':{'Be': 0.3, 'Rh':0.025}}}

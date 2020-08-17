@@ -230,7 +230,7 @@ def process_i(detector, source, phantom, prim_img, SNR, i):
     bl_img = detector.consider_blur(image, method='gaussian')#TODO: check if gaussian point spread function is a good assumption
 
     """digitize detector output (linear)"""
-    dg = detector.get_dg_output(bl_img, 14, 0.2148*2032443611.0515957)
+    dg = detector.get_dg_output(bl_img)
     
     """add white noise to image"""
     dg = detector.compute_noise(dg, SNR=SNR, method='white_noise')
